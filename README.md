@@ -3,7 +3,7 @@ playing with graphql and mikroORM
 
 For development (so far)
 - create a schema in postgres
-- `yarn watch` to build the js (builds the `.ts`)
-- `yarn dev` will listen for file changes and update the `/dist`
+- `yarn watch` will listen to for file changes in the `/dist`
+- `yarn dev` will update the dist folder on file saves
 - navigate to localhost:4000/graphql to play with the Post CRUD and User CRUD
 
