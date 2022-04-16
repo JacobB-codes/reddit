@@ -8,6 +8,11 @@ import { buildSchema } from "type-graphql";
 import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
+import Redis from "ioredis";
+import session from "express-session";
+import connectRedis from "connect-redis";
+import { MyContext } from "./types";
+import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 
 const main = async () => {
   const orm = await MikroORM.init(microConfig);
@@ -16,12 +21,36 @@ const main = async () => {
 
   const app = express();
 
+  // redis middleware will run before apollo
+  // (going to use redis _in_ apollo - so thats important)
+  const RedisStore = connectRedis(session);
+  const redisClient = new Redis(process.env.REDIS_URL);
+  app.use(
+    session({
+      name: "qid",
+      store: new RedisStore({
+        client: redisClient as any,
+        disableTouch: true, // keep user sessions open forever for now, TODO
+      }),
+      cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
+        httpOnly: true, // browser not able to access session
+        sameSite: "lax", // csrf
+        secure: __prod__, // cookie only works in https
+      },
+      saveUninitialized: false, // dont store empty sessions
+      secret: "beepbeepboopbop",
+      resave: false,
+    })
+  );
+
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [HelloResolver, PostResolver, UserResolver],
       validate: false,
     }),
-    context: () => ({ em: orm.em }),
+    context: ({ req, res }): MyContext => ({ em: orm.em, req, res }),
+    plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
   });
 
   await apolloServer.start();
