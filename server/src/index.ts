@@ -28,7 +28,7 @@ const main = async () => {
   const redisClient = new Redis(process.env.REDIS_URL);
   app.use(
     cors({
-      origin: "http://localhost:3000",
+      origin: ["http://localhost:3000", "https://studio.apollographql.com"],
       credentials: true,
     })
   );
