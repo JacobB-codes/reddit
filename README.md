@@ -6,4 +6,5 @@ For development (so far)
 - `yarn watch` will listen to for file changes in the `/dist`
 - `yarn dev` will update the dist folder on file saves
 - navigate to localhost:4000/graphql to play with the Post CRUD and User CRUD
+- frontend up at localhost:3000
 
