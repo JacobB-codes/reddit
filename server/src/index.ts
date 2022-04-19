@@ -25,7 +25,10 @@ const main = async () => {
   // redis middleware will run before apollo
   // (going to use redis _in_ apollo - so thats important)
   const RedisStore = connectRedis(session);
-  const redisClient = new Redis(process.env.REDIS_URL);
+  const redisClient = new Redis(
+    +process.env.REDIS_PORT! as number,
+    process.env.REDIS_HOST as string
+  );
   app.use(
     cors({
       origin: ["http://localhost:3000", "https://studio.apollographql.com"],
