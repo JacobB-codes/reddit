@@ -14,9 +14,11 @@ import connectRedis from "connect-redis";
 import { MyContext } from "./types";
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 import cors from "cors";
+import { User } from "./entities/User";
 
 const main = async () => {
   const orm = await MikroORM.init(microConfig);
+  orm.em.nativeDelete(User, {});
   // automatically run migrations
   await orm.getMigrator().up();
 
