@@ -14,11 +14,9 @@ import connectRedis from "connect-redis";
 import { MyContext } from "./types";
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 import cors from "cors";
-import { User } from "./entities/User";
 
 const main = async () => {
   const orm = await MikroORM.init(microConfig);
-  orm.em.nativeDelete(User, {});
   // automatically run migrations
   await orm.getMigrator().up();
 
@@ -27,7 +25,7 @@ const main = async () => {
   // redis middleware will run before apollo
   // (going to use redis _in_ apollo - so thats important)
   const RedisStore = connectRedis(session);
-  const redisClient = new Redis(
+  const redis = new Redis(
     +process.env.REDIS_PORT! as number,
     process.env.REDIS_HOST as string
   );
@@ -41,7 +39,7 @@ const main = async () => {
     session({
       name: COOKIE_NAME,
       store: new RedisStore({
-        client: redisClient as any,
+        client: redis as any,
         disableTouch: true, // keep user sessions open forever for now, TODO
       }),
       cookie: {
@@ -61,7 +59,7 @@ const main = async () => {
       resolvers: [HelloResolver, PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({ req, res }): MyContext => ({ em: orm.em, req, res }),
+    context: ({ req, res }): MyContext => ({ em: orm.em, req, res, redis }),
     plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
   });
 
@@ -72,7 +70,7 @@ const main = async () => {
   });
 
   app.listen(4000, () => {
-    console.log("started");
+    console.log("started on 4000");
   });
 };
 
