@@ -34,14 +34,14 @@ const Login: React.FC<loginProps> = ({}) => {
               name="usernameOrEmail"
               placeholder="Username or Email"
               label="Username or Email"
-            ></InputField>
+            />
             <Box mt={4}>
               <InputField
                 name="password"
                 placeholder="Password"
                 label="Password"
                 type="password"
-              ></InputField>
+              />
             </Box>
             <Flex mt={2}>
               <NextLink href="/forgot-password">
