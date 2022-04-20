@@ -1,7 +1,5 @@
 import "reflect-metadata";
-import { MikroORM } from "@mikro-orm/core";
 import { COOKIE_NAME, __prod__ } from "./constants";
-import microConfig from "./mikro-orm.config";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
@@ -14,21 +12,32 @@ import connectRedis from "connect-redis";
 import { MyContext } from "./types";
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 import cors from "cors";
+import { DataSource } from "typeorm";
+import { Post } from "./entities/Post";
+import { User } from "./entities/User";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 const main = async () => {
-  const orm = await MikroORM.init(microConfig);
-  // automatically run migrations
-  await orm.getMigrator().up();
+  const orm = new DataSource({
+    type: "postgres",
+    database: "reddit2",
+    username: "postgres",
+    password: "postgres",
+    logging: true,
+    synchronize: true,
+    entities: [Post, User],
+  });
+
+  orm.initialize();
 
   const app = express();
 
   // redis middleware will run before apollo
   // (going to use redis _in_ apollo - so thats important)
   const RedisStore = connectRedis(session);
-  const redis = new Redis(
-    +process.env.REDIS_PORT! as number,
-    process.env.REDIS_HOST as string
-  );
+  const redis = new Redis(+process.env.REDIS_PORT, process.env.REDIS_HOST);
   app.use(
     cors({
       origin: ["http://localhost:3000", "https://studio.apollographql.com"],
@@ -59,7 +68,7 @@ const main = async () => {
       resolvers: [HelloResolver, PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({ req, res }): MyContext => ({ em: orm.em, req, res, redis }),
+    context: ({ req, res }): MyContext => ({ req, res, redis }),
     plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
   });
 
