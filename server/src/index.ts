@@ -16,6 +16,7 @@ import { DataSource } from "typeorm";
 import { Post } from "./entities/Post";
 import { User } from "./entities/User";
 import * as dotenv from "dotenv";
+import path from "path";
 
 dotenv.config();
 
@@ -27,10 +28,11 @@ const main = async () => {
     password: "postgres",
     logging: true,
     synchronize: true,
+    migrations: [path.join(__dirname, "./migrations/*")],
     entities: [Post, User],
   });
 
-  orm.initialize();
+  (await orm.initialize()).runMigrations();
 
   const app = express();
 
