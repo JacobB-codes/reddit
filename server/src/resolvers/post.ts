@@ -12,6 +12,7 @@ import {
 } from "type-graphql";
 import { MyContext } from "src/types";
 import { isAuth } from "../middleware/isAuth";
+import { LessThan } from "typeorm";
 
 @InputType()
 class PostInput {
@@ -24,8 +25,16 @@ class PostInput {
 @Resolver()
 export class PostResolver {
   @Query(() => [Post])
-  posts(): Promise<Post[]> {
-    return Post.find();
+  async posts(
+    @Arg("limit", () => Int, { nullable: true }) limit: number | null,
+    @Arg("cursor", () => String, { nullable: true }) cursor: string | null
+  ): Promise<Post[]> {
+    const realLimit = limit ? Math.min(50, limit) : 50;
+    return await Post.find({
+      where: cursor ? { createdAt: LessThan(new Date(+cursor)) } : {},
+      order: { createdAt: "DESC" },
+      take: realLimit,
+    });
   }
 
   @Query(() => Post, { nullable: true })
