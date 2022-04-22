@@ -27,7 +27,7 @@ const Index = () => {
   return (
     <Layout>
       <Flex align="center">
-        <Heading>Reddit</Heading>
+        <Heading>Thirdjob</Heading>
         <NextLink href="/create-job">
           <Link ml="auto">create job</Link>
         </NextLink>
