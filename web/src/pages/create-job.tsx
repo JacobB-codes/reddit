@@ -5,21 +5,21 @@ import { useRouter } from "next/router";
 import React from "react";
 import InputField from "../components/InputField";
 import Layout from "../components/Layout";
-import { useCreatePostMutation } from "../generated/graphql";
+import { useCreateJobMutation } from "../generated/graphql";
 import { createUrqlClient } from "../utils/createUrqlClient";
 import { useIsAuth } from "../utils/useIsAuth";
 
-const CreatePost: React.FC<{}> = ({}) => {
+const CreateJob: React.FC<{}> = ({}) => {
   const router = useRouter();
   useIsAuth();
 
-  const [, createPost] = useCreatePostMutation();
+  const [, createJob] = useCreateJobMutation();
   return (
     <Layout variant="small">
       <Formik
-        initialValues={{ title: "", text: "" }}
+        initialValues={{ title: "", description: "" }}
         onSubmit={async (values) => {
-          const { error } = await createPost({ options: values });
+          const { error } = await createJob({ options: values });
           if (!error) {
             router.push("/");
           }
@@ -31,9 +31,9 @@ const CreatePost: React.FC<{}> = ({}) => {
             <Box mt={4}>
               <InputField
                 textarea
-                name="text"
-                placeholder="text..."
-                label="Body"
+                name="description"
+                placeholder="description..."
+                label="Description"
               />
             </Box>
             <Button
@@ -42,7 +42,7 @@ const CreatePost: React.FC<{}> = ({}) => {
               type="submit"
               colorScheme="teal"
             >
-              create post
+              create job
             </Button>
           </Form>
         )}
@@ -51,4 +51,4 @@ const CreatePost: React.FC<{}> = ({}) => {
   );
 };
 
-export default withUrqlClient(createUrqlClient)(CreatePost);
+export default withUrqlClient(createUrqlClient)(CreateJob);

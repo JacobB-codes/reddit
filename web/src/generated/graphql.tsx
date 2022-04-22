@@ -21,16 +21,32 @@ export type FieldError = {
   message: Scalars['String'];
 };
 
+export type Job = {
+  __typename?: 'Job';
+  createdAt: Scalars['String'];
+  creatorId: Scalars['Float'];
+  description: Scalars['String'];
+  descriptionSnippet: Scalars['String'];
+  id: Scalars['Float'];
+  title: Scalars['String'];
+  updatedAt: Scalars['String'];
+};
+
+export type JobInput = {
+  description: Scalars['String'];
+  title: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   changePassword: UserResponse;
-  createPost: Post;
-  deletePost: Scalars['Boolean'];
+  createJob: Job;
+  deleteJob: Scalars['Boolean'];
   forgotPassword: Scalars['Boolean'];
   login: UserResponse;
   logout: Scalars['Boolean'];
   register: UserResponse;
-  updatePost?: Maybe<Post>;
+  updateJob?: Maybe<Job>;
 };
 
 
@@ -40,12 +56,12 @@ export type MutationChangePasswordArgs = {
 };
 
 
-export type MutationCreatePostArgs = {
-  options: PostInput;
+export type MutationCreateJobArgs = {
+  options: JobInput;
 };
 
 
-export type MutationDeletePostArgs = {
+export type MutationDeleteJobArgs = {
   id: Scalars['Float'];
 };
 
@@ -66,43 +82,26 @@ export type MutationRegisterArgs = {
 };
 
 
-export type MutationUpdatePostArgs = {
+export type MutationUpdateJobArgs = {
   id: Scalars['Int'];
   title?: InputMaybe<Scalars['String']>;
-};
-
-export type Post = {
-  __typename?: 'Post';
-  createdAt: Scalars['String'];
-  creatorId: Scalars['Float'];
-  id: Scalars['Float'];
-  points: Scalars['Float'];
-  text: Scalars['String'];
-  textSnippet: Scalars['String'];
-  title: Scalars['String'];
-  updatedAt: Scalars['String'];
-};
-
-export type PostInput = {
-  text: Scalars['String'];
-  title: Scalars['String'];
 };
 
 export type Query = {
   __typename?: 'Query';
   hello: Scalars['String'];
+  job?: Maybe<Job>;
+  jobs: Array<Job>;
   me?: Maybe<User>;
-  post?: Maybe<Post>;
-  posts: Array<Post>;
 };
 
 
-export type QueryPostArgs = {
+export type QueryJobArgs = {
   id: Scalars['Int'];
 };
 
 
-export type QueryPostsArgs = {
+export type QueryJobsArgs = {
   cursor?: InputMaybe<Scalars['String']>;
   limit?: InputMaybe<Scalars['Int']>;
 };
@@ -142,12 +141,12 @@ export type ChangePasswordMutationVariables = Exact<{
 
 export type ChangePasswordMutation = { __typename?: 'Mutation', changePassword: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null, user?: { __typename?: 'User', id: number, username: string } | null } };
 
-export type CreatePostMutationVariables = Exact<{
-  options: PostInput;
+export type CreateJobMutationVariables = Exact<{
+  options: JobInput;
 }>;
 
 
-export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', id: number, createdAt: string, updatedAt: string, creatorId: number, title: string, text: string, points: number } };
+export type CreateJobMutation = { __typename?: 'Mutation', createJob: { __typename?: 'Job', id: number, createdAt: string, updatedAt: string, creatorId: number, title: string, description: string } };
 
 export type ForgotPasswordMutationVariables = Exact<{
   email: Scalars['String'];
@@ -176,18 +175,18 @@ export type RegisterMutationVariables = Exact<{
 
 export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null, user?: { __typename?: 'User', id: number, username: string } | null } };
 
-export type MeQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: number, username: string } | null };
-
-export type PostsQueryVariables = Exact<{
+export type JobsQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']>;
   cursor?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: number, createdAt: string, updatedAt: string, title: string, textSnippet: string, creatorId: number }> };
+export type JobsQuery = { __typename?: 'Query', jobs: Array<{ __typename?: 'Job', id: number, createdAt: string, updatedAt: string, title: string, descriptionSnippet: string, creatorId: number }> };
+
+export type MeQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: number, username: string } | null };
 
 export const RegularErrorFragmentDoc = gql`
     fragment RegularError on FieldError {
@@ -223,22 +222,21 @@ export const ChangePasswordDocument = gql`
 export function useChangePasswordMutation() {
   return Urql.useMutation<ChangePasswordMutation, ChangePasswordMutationVariables>(ChangePasswordDocument);
 };
-export const CreatePostDocument = gql`
-    mutation CreatePost($options: PostInput!) {
-  createPost(options: $options) {
+export const CreateJobDocument = gql`
+    mutation CreateJob($options: JobInput!) {
+  createJob(options: $options) {
     id
     createdAt
     updatedAt
     creatorId
     title
-    text
-    points
+    description
   }
 }
     `;
 
-export function useCreatePostMutation() {
-  return Urql.useMutation<CreatePostMutation, CreatePostMutationVariables>(CreatePostDocument);
+export function useCreateJobMutation() {
+  return Urql.useMutation<CreateJobMutation, CreateJobMutationVariables>(CreateJobDocument);
 };
 export const ForgotPasswordDocument = gql`
     mutation ForgotPassword($email: String!) {
@@ -280,6 +278,22 @@ export const RegisterDocument = gql`
 export function useRegisterMutation() {
   return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
 };
+export const JobsDocument = gql`
+    query Jobs($limit: Int, $cursor: String) {
+  jobs(limit: $limit, cursor: $cursor) {
+    id
+    createdAt
+    updatedAt
+    title
+    descriptionSnippet
+    creatorId
+  }
+}
+    `;
+
+export function useJobsQuery(options?: Omit<Urql.UseQueryArgs<JobsQueryVariables>, 'query'>) {
+  return Urql.useQuery<JobsQuery>({ query: JobsDocument, ...options });
+};
 export const MeDocument = gql`
     query Me {
   me {
@@ -290,20 +304,4 @@ export const MeDocument = gql`
 
 export function useMeQuery(options?: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'query'>) {
   return Urql.useQuery<MeQuery>({ query: MeDocument, ...options });
-};
-export const PostsDocument = gql`
-    query Posts($limit: Int, $cursor: String) {
-  posts(limit: $limit, cursor: $cursor) {
-    id
-    createdAt
-    updatedAt
-    title
-    textSnippet
-    creatorId
-  }
-}
-    `;
-
-export function usePostsQuery(options?: Omit<Urql.UseQueryArgs<PostsQueryVariables>, 'query'>) {
-  return Urql.useQuery<PostsQuery>({ query: PostsDocument, ...options });
 };

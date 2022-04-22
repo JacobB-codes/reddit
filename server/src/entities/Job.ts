@@ -12,7 +12,7 @@ import { User } from "./User";
 
 @ObjectType()
 @Entity()
-export class Post extends BaseEntity {
+export class Job extends BaseEntity {
   @Field()
   @PrimaryGeneratedColumn()
   id!: number;
@@ -23,17 +23,13 @@ export class Post extends BaseEntity {
 
   @Field()
   @Column()
-  text!: string;
-
-  @Field()
-  @Column({ type: "int", default: 0 })
-  points!: number;
+  description!: string;
 
   @Field()
   @Column()
   creatorId: number;
 
-  @ManyToOne(() => User, (user) => user.posts)
+  @ManyToOne(() => User, (user) => user.jobs)
   creator: User;
 
   @Field(() => String)
