@@ -16,21 +16,23 @@ import { DataSource } from "typeorm";
 import { Job } from "./entities/Job";
 import { User } from "./entities/User";
 import * as dotenv from "dotenv";
+import path from "path";
 
 dotenv.config();
 
 const main = async () => {
   const orm = new DataSource({
     type: "postgres",
-    database: "thirdjob",
-    username: "postgres",
-    password: "postgres",
+    database: process.env.DB_NAME,
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
     logging: true,
     synchronize: true,
+    migrations: [path.join(__dirname, "./migrations/*")],
     entities: [Job, User],
   });
 
-  orm.initialize();
+  (await orm.initialize()).runMigrations();
 
   const app = express();
 
