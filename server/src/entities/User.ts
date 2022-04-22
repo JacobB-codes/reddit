@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Post } from "./Post";
+import { Job } from "./Job";
 
 @ObjectType()
 @Entity()
@@ -28,8 +28,8 @@ export class User extends BaseEntity {
   @Column()
   password!: string;
 
-  @OneToMany(() => Post, (post) => post.creator)
-  posts: Post[];
+  @OneToMany(() => Job, (job) => job.creator)
+  jobs: Job[];
 
   @Field(() => String)
   @CreateDateColumn()

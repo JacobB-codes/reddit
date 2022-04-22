@@ -4,7 +4,7 @@ import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { HelloResolver } from "./resolvers/hello";
-import { PostResolver } from "./resolvers/post";
+import { JobResolver } from "./resolvers/job";
 import { UserResolver } from "./resolvers/user";
 import Redis from "ioredis";
 import session from "express-session";
@@ -13,26 +13,24 @@ import { MyContext } from "./types";
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 import cors from "cors";
 import { DataSource } from "typeorm";
-import { Post } from "./entities/Post";
+import { Job } from "./entities/Job";
 import { User } from "./entities/User";
 import * as dotenv from "dotenv";
-import path from "path";
 
 dotenv.config();
 
 const main = async () => {
   const orm = new DataSource({
     type: "postgres",
-    database: "reddit2",
+    database: "thirdjob",
     username: "postgres",
     password: "postgres",
     logging: true,
     synchronize: true,
-    migrations: [path.join(__dirname, "./migrations/*")],
-    entities: [Post, User],
+    entities: [Job, User],
   });
 
-  (await orm.initialize()).runMigrations();
+  orm.initialize();
 
   const app = express();
 
@@ -67,7 +65,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, PostResolver, UserResolver],
+      resolvers: [HelloResolver, JobResolver, UserResolver],
       validate: false,
     }),
     context: ({ req, res }): MyContext => ({ req, res, redis }),
