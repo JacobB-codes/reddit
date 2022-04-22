@@ -1,4 +1,7 @@
-# reddit clone (probably not, but we'll see)
+# NOT COMMITTING HERE ANYMORE...
+broke this repo into two independent repos (1 for server, 1 for ui)
+https://github.com/JacobB-codes/thirdjob-server
+https://github.com/JacobB-codes/thirdjob-ui
 
 playing with graphql and mikroORM
 
